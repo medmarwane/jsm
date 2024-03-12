@@ -14,11 +14,10 @@ import { CustomField } from "./CustomField"
 import { startTransition, useState, useTransition } from "react"
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils"
 import { updateCredits } from "@/lib/actions/user.actions"
+import MediaUploader from "./MediaUploader"
 
 export const formSchema = z.object({
-  username: z.string().min(3, {
-    message: "Username must be at least 3 characters."
-  }),
+  title: z.string(),
   aspectRatio: z.string().optional(),
   color: z.string().optional(),
   prompt: z.string().optional(),
@@ -27,7 +26,7 @@ export const formSchema = z.object({
 
 const TransformationForm = ({ action, data = null, userId, type, creditBalance, config = null }: TransformationFormProps) => {
   const transformationType = transformationTypes[type]
-  const [Image, setImage] = useState(data)
+  const [image, setImage] = useState(data)
   const [newTransformation, setNewTransformation] = useState<Transformations | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isTransforming, setIsTransforming] = useState(false)
@@ -99,7 +98,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CustomField control={form.control} name="Title" formLabel="Image Title" className="w-full" render={({ field }) => <Input {...field} className="input-field" />} />
+        <CustomField control={form.control} name="title" formLabel="Image Title" className="w-full" render={({ field }) => <Input {...field} className="input-field" />} />
 
         {type === "fill" && (
           <CustomField
@@ -131,6 +130,11 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
             {type === "recolor" && <CustomField control={form.control} name="color" formLabel="Replacement Color" className="w-full" render={({ field }) => <Input className="input-field" value={field.value} onChange={e => onInputChangeHandler("color", e.target.value, "recolor", field.onChange)} />} />}
           </div>
         )}
+
+        <div className="media-uploader-field">
+          <CustomField control={form.control} name="publicId" className="flex size-full flex-col" render={({ field }) => <MediaUploader onValueChange={field.onChange} setImage={setImage} publicId={field.value} image={image} type={type} />} />
+        </div>
+
         <div className="flex flex-col gap-4">
           <Button type="button" className="submit-button capitalize" disabled={isTransforming || newTransformation === null} onClick={onTransformHandler}>
             {isTransforming ? "Transforming..." : "Apply transformation"}
