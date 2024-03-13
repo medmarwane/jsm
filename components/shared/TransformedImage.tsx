@@ -18,6 +18,7 @@ const TransformedImage = ({ image, type, title, transformationConfig, isTransfor
           </button>
         )}
       </div>
+
       {image?.public_id && transformationConfig ? (
         <div className="relative">
           <CldImage
