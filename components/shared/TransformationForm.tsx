@@ -11,7 +11,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { aspectRatioOptions, defaultValues, transformationTypes } from "@/constants"
 import { CustomField } from "./CustomField"
-import { startTransition, useState, useTransition } from "react"
+import { useEffect, useState, useTransition } from "react"
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils"
 import { updateCredits } from "@/lib/actions/user.actions"
 import MediaUploader from "./MediaUploader"
@@ -32,7 +32,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isTransforming, setIsTransforming] = useState(false)
   const [transformationConfig, setTransformationConfig] = useState(config)
-  const [isPending, setIsPending] = useTransition()
+  const [isPending, startTransition] = useTransition()
 
   const initialValues =
     data && action === "Update"
@@ -91,8 +91,8 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
 
     setNewTransformation(null)
 
-    startTransition(() => {
-      updateCredits(userId, -1)
+    startTransition(async () => {
+      await updateCredits(userId, -1)
     })
   }
 
